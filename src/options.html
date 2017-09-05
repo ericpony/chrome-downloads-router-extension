@@ -49,17 +49,18 @@
 				border: none;
 				padding: 10px;
 				cursor: pointer;
-			} button.btn, button.btn2 {
+			} button.add-rule-btn, button.save-btn {
 				background-color: #6d6d6d;
 				color: #fff;
 				transition: .2s ease;
-				padding: 13px 0;
+				/*padding: 13px 0;*/
 				width: 100%;
-			} button.btn2 {
+				height: 40px;
+			} button.save-btn {
 				background-color: #38851b;
-			} button.btn:hover {
+			} button.add-rule-btn:hover {
 				background-color: #5f90e5;
-			} button.btn2:hover {
+			} button.save-btn:hover {
 				background-color: #73ce50;
 			} button.delete {
 				color: #cc0000;
@@ -156,7 +157,7 @@
 			</div>
 
 			<ul id="nav">
-				<li id="nav_routing" data-tab="routing">Routing rules</li><li id="nav_usage" data-tab="usage">Usage instructions</li><li id="nav_about" data-tab="about">About</li>
+				<li id="nav_routing" data-tab-id="routing">Routing rules</li><li id="nav_usage" data-tab-id="usage">Usage instructions</li><li id="nav_about" data-tab-id="about">About</li>
 			</ul>
 
 			<div id="content">
@@ -171,29 +172,35 @@
 					<input type="text" id="rule_order" name="rule_order" value="" placeholder="filename, referrer, mime">
 
 					<h2>Filetype &#8680; folder mapping</h2>
-					<table id="mime_mapping_table">
+					<table id="mime_rule_table">
 						<thead>
-							<tr><th>Filetype (MIME)</th><th></th><th>Destination folder</th><th></th></tr>
+							<tr><th>Filetype (MIME)</th><th></th><th>Destination folder</th><th>Conflict policy</th><th></th></tr>
 						</thead>
 						<tbody>
-							<tr><td colspan="4"><button id="add_mime_route" class="btn"><strong>+</strong> Add new routing rule</button></td></tr>
+							<tr>
+								<td colspan="3"><button id="add_mime_rule" class="add-rule-btn"></button></td>
+								<td colspan="2"><button class="save-btn"></button></td>
+							</tr>
 						</tbody>
 					</table>
-	
+
 					<h2>Referrer &#8680; folder mapping</h2>
 
 					<div style="margin: 5px; padding: 10px; border: 1px solid #efefef; background-color: #fafafa;">
-						<input type="checkbox" name="global_refs" id="global_ref_folders" value="1">  
+						<input type="checkbox" name="global_refs" id="global_ref_folders" value="1">
 						<h5 style="display: inline-block; margin: 0;"><label for="global_ref_folders">Enable global referrer folders</label></h5>
 						<p class="note">Enable this checkbox to make <strong>all</strong> downloads (not preceded by another explicit rule) be stored in a folder with the same name as the source domain.</p>
 					</div>
 
-					<table id="referrer_mapping_table">
+					<table id="referrer_rule_table">
 						<thead>
-							<tr><th>Source domain</th><th></th><th>Destination folder</th><th></th></tr>
+							<tr><th>Source domain</th><th></th><th>Destination folder</th><th>Conflict policy</th><th></th></tr>
 						</thead>
 						<tbody>
-							<tr><td colspan="4"><button id="add_referrer_route" class="btn"><strong>+</strong> Add new routing rule</button></td></tr>
+							<tr>
+								<td colspan="3"><button id="add_referrer_rule" class="add-rule-btn"></button></td>
+								<td colspan="2"><button class="save-btn"></button></td>
+							</tr>
 						</tbody>
 					</table>
 					<ul class="note">
@@ -202,17 +209,20 @@
 					</ul>
 
 					<h2>Filename &#8680; folder mapping</h2>
-					<table id="filename_mapping_table">
+					<table id="filename_rule_table">
 						<thead>
-							<tr><th>Filename keyword</th><th></th><th>Destination folder</th><th></th></tr>
+							<tr><th>Filename keyword</th><th></th><th>Destination folder</th><th>Conflict policy</th><th></th></tr>
 						</thead>
 						<tbody>
-							<tr><td colspan="4"><button id="add_filename_route" class="btn"><strong>+</strong> Add new routing rule</button></td></tr>
+							<tr>
+								<td colspan="3"><button id="add_filename_rule" class="add-rule-btn"></button></td>
+								<td colspan="2"><button class="save-btn"></button></td>
+							</tr>
 						</tbody>
 					</table>
 					<p class="note">* Keywords are case-insensitive. Recommended basic usage is a single keyword per rule. Further guidelines are available on the "Usage instructions" page. The keyword is treated directly as a regular expression &mdash; feel free to experiment.</p>
 
-					<button id="save" class="btn2">&#10004; Save configuration</button>
+					<button class="save-btn"></button>
 
 					<h2>Common MIME types</h2>
 					<p class="note">This table contains a few common MIME types that might help you set up your routing configuration. A more extensive list is available on <a href="http://en.wikipedia.org/wiki/Internet_media_type#List_of_common_media_types">Wikipedia</a>.</p>
@@ -262,7 +272,7 @@
 						<li>Configure Downloads Router, setting your Destination folder to TARGET.
 							<ul>
 								<li>Example: Filetype (MIME) = <em>audio/mpeg</em>, Destination folder = <em>Music/</em></li>
-							</ul>	
+							</ul>
 						</li>
 					</ol>
 
@@ -278,7 +288,7 @@
 						<li>Configure Downloads Router, setting your Destination folder to LINK_NAME.
 							<ul>
 								<li>Example: Filetype (MIME) = <em>audio/mpeg</em>, Destination folder = <em>music/</em></li>
-							</ul>	
+							</ul>
 						</li>
 					</ol>
 
@@ -303,7 +313,7 @@
 					<p>The MIME type is an identifier of the type of data that a file contains, and thus somewhat different from an extension (such as .pdf, or .png).</p>
 					<p>The routing rules page provides a table with some common MIME types, and a more <a href="http://en.wikipedia.org/wiki/Internet_media_type#List_of_common_media_types">exhaustive list can be found on Wikipedia</a>.
 
-					<p>Sometimes web servers distribute files as <em>application/octet-stream</em> rather than the "correct" MIME-type. Workarounds for the most common types have been implemented and should solve this issue automatically, 
+					<p>Sometimes web servers distribute files as <em>application/octet-stream</em> rather than the "correct" MIME-type. Workarounds for the most common types have been implemented and should solve this issue automatically,
 					but if you encounter problems, please attempt to use either of the other routing options to avoid this issue.</p>
 
 
@@ -355,7 +365,7 @@
 					<h1>About this extension</h1>
 					<p>This extension was hacked together overnight by yours truly, during the wee hours most sane people spend sleeping. As such, there are certainly many features I've yet to think about, not to mention bugs waiting to be discovered.</p>
 					<p>I'd be most grateful if you'd inform me of any and all such issues via the project source code repository &mdash; and if you feel like adding some code yourself, that'd be beyond awesome!</p>
-	
+
 					<ul>
 						<li><a href="https://bitbucket.org/lfk/downloads-router-chrome-extension">Official Bitbucket repository</a>
 							<ul>
@@ -368,7 +378,7 @@
 
 					<img src="http://www.gravatar.com/avatar/ae8bfeb002bf86d989cab8c93e0794c6.png?s=36" alt="Gravatar" style="float: left; margin: 0 15px 0 0;">
 					<p>Best regards,<br>&mdash; Fredrik Karlström</p>
-	
+
 					<h3>Licence</h3>
 					<pre>
 Copyright (c) 2014 Fredrik Karlström
@@ -393,8 +403,8 @@ THE SOFTWARE.
 </pre>
 
 			</div>
-		</div>
-
+			</div></div>
+		<script src="common.js"></script>
 		<script src="options.js"></script>
 	</body>
 </html>
