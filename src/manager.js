@@ -46,7 +46,8 @@ function handle_conflict (item, route, suggest) {
     // skip download if a file with the same name exists
     chrome.downloads.search({
         filenameRegex: get_fp_regex(item.filename, route.path, false),
-        exists: true,
+        state: 'complete', // need this hack due to the following reason
+        exists: true, // this condition sometimes doesn't filter non-existent files!
         limit: 1
       },
       items => {
@@ -78,15 +79,28 @@ function handle_conflict (item, route, suggest) {
   return true;
 }
 
+function match_pattern (target, pattern, route) {
+  if (!route) return undefined;
+  //if (route.regex) {
+  if (true) {
+    let regex = new RegExp(pattern, 'i');
+    let res = target.match(regex);
+    if (!res) return undefined;
+    res[0] = route.path;
+    route.path = res.reduce((a, c, i) =>
+      a.replace(new RegExp('\\$' + i, 'g'), c));
+  } else {
+    if (target.indexOf(pattern) < 0) return undefined;
+  }
+  return route;
+}
 const apply_filename_rule = (rule_type, item, suggest) => {
   let rule = load_rule(rule_type);
   return Object.keys(rule).some(
-    keyword => {
-      let regex = new RegExp(keyword, 'i');
-      if (regex.test(item.filename)) {
-        let route = rule[keyword];
-        return handle_conflict(item, route, suggest);
-      }
+    pattern => {
+      let route = match_pattern(item.filename, pattern, rule[pattern]);
+      if (!route) return false;
+      return handle_conflict(item, route, suggest);
     });
 };
 
@@ -98,18 +112,21 @@ const apply_referrer_rule = (rule_type, item, suggest) => {
   let ref_domain = (function () {
     let matches;
     if (item.referrer) {
-      matches = item.referrer.match(/^https?\:\/\/([^\/:?#]+)(?:[\/:?#]|$)/i);
+      matches = item.referrer.match(/\/\/([^\/:?#]+)(?:[\/:?#]|$)/i);
     } else {
-      matches = item.url.match(/^https?\:\/\/([^\/:?#]+)(?:[\/:?#]|$)/i);
+      matches = item.url.match(/\/\/([^\/:?#]+)(?:[\/:?#]|$)/i);
     }
     return matches && matches.length && matches[1].replace(/^www\./i, '');
   })();
   if (!ref_domain) return false;
   /////
-  if (rule[ref_domain]) {
-    let route = rule[ref_domain];
-    return handle_conflict(item, route, suggest);
-  }
+  if (Object.keys(rule).some(
+      pattern => {
+        let route = match_pattern(ref_domain, pattern, rule[pattern]);
+        if (!route) return false;
+        return handle_conflict(item, route, suggest);
+      }))
+    return true;
   /////
   if (load_item('global_ref_folders')) {
     let route = {
@@ -118,6 +135,7 @@ const apply_referrer_rule = (rule_type, item, suggest) => {
     };
     return handle_conflict(item, route, suggest);
   }
+  return false;
 };
 
 const apply_mime_rule = (rule_type, item, suggest) => {

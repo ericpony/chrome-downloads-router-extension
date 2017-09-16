@@ -5,7 +5,7 @@ const MODES = ['Rename', 'Overwrite', 'Skip', 'Prompt'];
 const MODE_TO_ACTION = create_mapping(
   MODES, ['uniquify', 'overwrite', undefined, 'prompt']);
 
-const DEFAULT_MODE = MODES[0];
+const DEFAULT_MODE = MODES[2];
 
 function create_map (keys, get_value) {
   let map = {};

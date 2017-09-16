@@ -6,7 +6,7 @@ const DEFAULT_RULES = [
   {'image/jpeg': 'images/', 'application/x-bittorrent': 'torrents/'},
   {}, {}];
 
-function create_route (path, mode) {
+function create_route (path, mode, use_regex) {
   let canonicalize =
     create_route.cp = create_route.cp ||
       (path => {
@@ -18,7 +18,8 @@ function create_route (path, mode) {
       });
   return {
     path: canonicalize(path),
-    mode: mode || this.DEFAULT_MODE
+    mode: mode || this.DEFAULT_MODE,
+    regex: use_regex
   };
 }
 
@@ -27,22 +28,24 @@ function save_options () {
   TABLES.keys.forEach((id, i) => {
     let rules = rule_list[i];
     let table = TABLES[id];
-    let num_rows = table.rows.length - 1;
-    for (let j = 0; j < num_rows; j++) {
-      let row = table.rows[j];
-      let fields = row.getElementsByTagName('input');
-      let keyword = fields[0].value.trim();
-      let path = fields[1].value.trim();
-      if (!!keyword && !!path) {
-        let mode = null;
-        Array.from(fields).some(field =>
-          field.checked && (mode = field.title)
-        );
-        let route = create_route(path, mode);
-        rules[keyword] = route;
-        fields[1].value = route.path;
-      }
-    }
+    let last_row = table.rows[table.rows.length - 1];
+    Array.prototype.forEach.call(table.rows,
+      row => {
+        if (row === last_row) return;
+        let fields = row.getElementsByTagName('input');
+        let keyword = fields[0].value.trim();
+        let path = fields[1].value.trim();
+        let use_regex = true; //fields[fields.length - 1].checked;
+        if (!!keyword && !!path) {
+          let mode = null;
+          Array.prototype.some.call(fields,
+            field => field.type === 'radio' && field.checked && (mode = field.title)
+          );
+          let route = create_route(path, mode, use_regex);
+          rules[keyword] = route;
+          fields[1].value = route.path;
+        }
+      });
     save_rule(RULE_TYPES[i], rules);
   });
 
@@ -83,7 +86,7 @@ function restore_options () {
       if (!rule.path || !rule.mode)
         continue;
       add_table_row(TABLES[i],
-        {value: keyword}, {value: rule.path}, rule.mode);
+        {value: keyword}, {value: rule.path}, rule.mode, rule.regex);
     }
   });
 
@@ -91,7 +94,7 @@ function restore_options () {
   g('global_ref_folders').checked = load_item('global_ref_folders') || false;
 }
 
-function add_table_row (table, srcAttr, dstAttr, mode) {
+function add_table_row (table, srcAttr, dstAttr, mode, use_regex) {
   let row_id = add_table_row.row_id = (add_table_row.row_id || 0) + 1;
   let newRow = table.insertRow(table.rows.length - 1);
   let srcCell = newRow.insertCell(0);
@@ -126,6 +129,10 @@ function add_table_row (table, srcAttr, dstAttr, mode) {
     modeCell.appendChild(document.createTextNode('　'));
   });
   /////
+  // let regCell = document.createElement('input');
+  // regCell.type = 'checkbox';
+  // regCell.checked = !!use_regex;
+  /////
   let delInput = document.createElement('button');
   delInput.className = 'btn delete';
   delInput.innerHTML = '&#215;';
@@ -142,6 +149,7 @@ function add_table_row (table, srcAttr, dstAttr, mode) {
   newRow.appendChild(spaceCell);
   newRow.appendChild(destCell);
   newRow.appendChild(modeCell);
+  //newRow.appendChild(regCell);
   newRow.appendChild(delCell);
 }
 
@@ -197,13 +205,15 @@ function handle_click () {
 
 document.addEventListener('DOMContentLoaded', options_setup);
 
-Array.from(document.getElementsByClassName('save-btn')).forEach(
+Array.prototype.forEach.call(
+  document.getElementsByClassName('save-btn'),
   elem => {
     elem.addEventListener('click', save_options);
     elem.innerHTML = '&#10004; Save configuration';
   });
 
-Array.from(document.getElementsByClassName('add-rule-btn')).forEach(
+Array.prototype.forEach.call(
+  document.getElementsByClassName('add-rule-btn'),
   elem => {
     elem.innerHTML = '<strong>+</strong> Add new routing rule';
     elem.addEventListener('click', (() => {
