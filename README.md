@@ -4,13 +4,22 @@ Downloads Router
 Downloads Router is an extension for Chromium and Google Chrome that allows the user
 to establish routing rules, directing downloads to folders based on filetype, filename, or source domain.
 
-* [Chrome web store listing][webstore]
+* [Source code / issue report for ver 0.9 and later][successor]
+* [Source code up to ver 0.8.1][original]
+* [Install from Chrome web store (ver 0.8.1)][webstore]
 
 [webstore]: https://chrome.google.com/webstore/detail/downloads-router/fgkboeogiiklpklnjgdiaghaiehcknjo
-
+[original]: https://github.com/lfk/downloads-router-chrome-extension
+[successor]: https://github.com/ericpony/chrome-downloads-router-extension
 
 Changelog
 ---------
+
+### 0.9 (September 30, 2017)
+
+* Support rule-based conflict actions (rename / overwrite / skip (default) / prompt)
+* Support text substitutions in the destination folder path
+* Apply referrer matching to arbitrary protocols, such as file and blob.
 
 ### 0.8.1 (September 30, 2014)
 

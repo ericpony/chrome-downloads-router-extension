@@ -4,9 +4,9 @@
   "short_name": "DLRouter",
   "description": "__MSG_appDesc__",
   "default_locale": "en",
-  "version": "0.8.1",
+  "version": "0.9",
   "options_page": "options.html",
-  "homepage_url": "https://bitbucket.org/lfk/downloads-router-chrome-extension",
+  "homepage_url": "https://github.com/ericpony/chrome-downloads-router-extension",
   "permissions": [
     "downloads",
     "notifications"

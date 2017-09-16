@@ -153,7 +153,7 @@
 			</header>
 
 			<div id="news">
-				<p><strong>(v0.8.1) Sept. 30, 2014:</strong> Bug fixes and fallback cases for referrer- and MIME-rules.</p>
+				<p></p>
 			</div>
 
 			<ul id="nav">
@@ -220,7 +220,7 @@
 							</tr>
 						</tbody>
 					</table>
-					<p class="note">* Keywords are case-insensitive. Recommended basic usage is a single keyword per rule. Further guidelines are available on the "Usage instructions" page. The keyword is treated directly as a regular expression &mdash; feel free to experiment.</p>
+					<p class="note">* Keywords are case-sensitive. Recommended basic usage is a single keyword per rule. Further guidelines are available on the "Usage instructions" page. The keyword is treated directly as a regular expression &mdash; feel free to experiment.</p>
 
 					<button class="save-btn"></button>
 
@@ -241,13 +241,14 @@
 						</tbody>
 					</table>
 
-					<h2>Advanced filename keywords</h2>
+					<h2>Advanced filename & referrer routing rules</h2>
 					<p class="note">A few helpful tricks for more powerful filename-based routing.</p>
 					<table id="advanced_keywords">
 						<tbody>
 							<tr><td>a|b</td><td>"|" is an else operator<br><span class="note">Matches "a" or "b".</span></td></tr>
 							<tr><td>a.b</td><td>"." is a single-character wildcard<br><span class="note">Matches "a-b", "a_b", "a b", etc.</span></td></tr>
 							<tr><td>a.*b</td><td>".*" multi-character wildcard<br><span class="note">Matches "a" followed by <strong>anything</strong> then followed by "b".</span></td></tr>
+							<tr><td>a(.*)b</td><td>"(.*)" parenthesized substring matches<br><span class="note">Memorizes the string between "a" and "b". Use $1, $2, ... to recall these matches in folder path.</span></td></tr>
 						</tbody>
 					</table>
 				</div>
@@ -320,7 +321,7 @@
 
 					<h2>Filename routing</h2>
 
-					<p>Route to target folder based on <strong>case-insensitive</strong> keyword(s) in the filename, using <strong>regular expressions</strong>.</p>
+					<p>Route to target folder based on <strong>case-sensitive</strong> keyword(s) in the filename, using <strong>regular expressions</strong>.</p>
 
 					<p>Please note that the matching is performed on a <em>substring</em> level, meaning that, for instance, the keyword "jet" would trigger the rule on downloads with filenames like "jetski" or "jumbojet."</p>
 
@@ -330,6 +331,11 @@
 					<p>The period (.) is used as a wildcard matching any single character, including whitespaces, dashes, and so forth. Thus, "some.keyword" would match "some keyword" as well as "some_keyword".
 					Powerusers may attempt to write more advanced regular expressions, but such usage has not been tested.</p>
 
+					<p>Parentheses in a regular expression cause the corresponding matches to be remembered.
+						You can recall these parenthesized substring matches in the destination folder path using $1, $2, ...
+						The number of possible parenthesized substrings is unlimited.</p>
+					<p>For example, /file-(\d+)/ matches and remembers the number following "file-" in the filename. If the
+						destination folder path is "f$1/", then a file named "file-1234" will be saved to the folder named "f1234".</p>
 					<h4>A note on back references</h4>
 					<p>At the present, Downloads Router does <strong>not</strong> support back references for automatically creating new downloads folders. This might be implemented in future versions.</p>
 
@@ -366,18 +372,17 @@
 					<p>This extension was hacked together overnight by yours truly, during the wee hours most sane people spend sleeping. As such, there are certainly many features I've yet to think about, not to mention bugs waiting to be discovered.</p>
 					<p>I'd be most grateful if you'd inform me of any and all such issues via the project source code repository &mdash; and if you feel like adding some code yourself, that'd be beyond awesome!</p>
 
-					<ul>
-						<li><a href="https://bitbucket.org/lfk/downloads-router-chrome-extension">Official Bitbucket repository</a>
-							<ul>
-								<li><a href="https://bitbucket.org/lfk/downloads-router-chrome-extension/issues">Issue tracker</a></li>
-							</ul>
-						</li>
-						<li><a href="http://cbsmth.se">The developer's homepage</a></li>
-						<li><a href="https://plus.google.com/+FredrikKarlström0">The developer on G+</a></li>
-					</ul>
-
 					<img src="http://www.gravatar.com/avatar/ae8bfeb002bf86d989cab8c93e0794c6.png?s=36" alt="Gravatar" style="float: left; margin: 0 15px 0 0;">
 					<p>Best regards,<br>&mdash; Fredrik Karlström</p>
+
+					<ul>
+						<li><b>
+							<a href="https://github.com/ericpony/chrome-downloads-router-extension">Code and issue report for version 0.9 and later</a>
+						</b></li>
+						<li>
+							<a href="https://bitbucket.org/lfk/downloads-router-chrome-extension">Official Bitbucket repository (up to version 0.8.1)</a>
+						</li>
+					</ul>
 
 					<h3>Licence</h3>
 					<pre>

@@ -233,3 +233,5 @@ Array.prototype.forEach.call(
       }
     })());
   });
+
+g('news').innerHTML = '<p><strong>(v0.9) Sept. 30, 2017:</strong>&nbsp; Support customized conflict action and text substitution in folder path</p>';
